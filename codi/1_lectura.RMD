@@ -1,0 +1,95 @@
+---
+title: 'Trends in the degree of control and treatment of cardiovascular risk factors in people with type 2 diabetes in the primary care setting in Catalonia during 2007-2018 '
+author: "Jordi Real & Rai Puig"
+website: "https://github.com/USR-DAPCAT/"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+
+
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    fig_caption: true
+    css: logos_css/usr_styles.css
+  pdf_document: default
+  word_document: default
+
+params:
+  dir_dades_origen: "dades" # "
+  dir_dades_desti: "dades"
+---
+
+
+&nbsp;
+<script>
+   $(document).ready(function() {
+     $head = $('#header');
+     $head.prepend('<img src=\"https://www.idiapjgol.org/images/logo.png\" style=\"float: right ;width: 130px;\"/>')
+     $head.prepend('<img src=\"https://avatars2.githubusercontent.com/u/57066591?s=200&v=4\" style=\"margin-left:25% ;width: 80px;\"/>')
+     $head.prepend('<img src=\"logoDAP_Cat.png\" style=\"float: left:1;width: 185px;\"/>')
+   });
+</script>
+
+
+
+<div class="watermark">DRAFT</div>
+
+
+
+
+# FASE LECTURA
+
+>> Generacio de taula plana i aplicacio dels primers criteris inclusio 
+
+```{r setup, include = F}
+#rm(list=ls())
+library("dplyr")
+library("lubridate")
+library("trend")
+library("Kendall")
+
+
+# Funcions 
+link_source<-paste0("https://github.com/jrealgatius/Stat_codis/blob/master/funcions_propies.R","?raw=T")
+devtools::source_url(link_source)
+directori_dades_origen<-params$dir_dades_origen
+
+```
+
+```{r lectura, include=T}
+Trends<-here::here(directori_dades_origen,"Trends.xlsx")
+
+dt_poblacio<-readxl::read_excel(Trends,col_types ="text",sheet = "Tabla1_FINAL") %>% as_tibble()
+
+#dt_poblacio1<-readxl::read_excel(Trends,col_types ="text",sheet = "Tabla1_format") %>% as_tibble()
+#dt_poblacio2<-readxl::read_excel(Trends,col_types ="text",sheet = "SupT1") %>% as_tibble()
+#dt_poblacio3<-readxl::read_excel(Trends,col_types ="text",sheet = "SupT2") %>% as_tibble()
+
+
+#dt_poblacio2<-readxl::read_excel(Trends,col_types ="text",sheet = "Tabla2") %>% as_tibble()
+#dt_poblacio3<-readxl::read_excel(Trends,col_types ="text") %>% as_tibble()
+
+
+```
+
+## 2. Trend
+
+Trends in the degree of control and treatment of cardiovascular risk factors in people with type 2 diabetes in the primary care setting in Catalonia during 2007-2018
+
+```{r Trend}
+
+
+```
+
+## 5. Salvar part1 
+```{r SALVAR}
+
+saveRDS(dt_poblacio,file=here::here(params$dir_dades_desti,"dt_poblacio.rds"))
+#saveRDS(dt_poblacio1,file=here::here(params$dir_dades_desti,"dt_poblacio1.rds"))
+#saveRDS(dt_poblacio2,file=here::here(params$dir_dades_desti,"dt_poblacio2.rds"))
+#saveRDS(dt_poblacio3,file=here::here(params$dir_dades_desti,"dt_poblacio3.rds"))
+
+```
+
