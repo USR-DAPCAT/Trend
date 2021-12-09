@@ -33,21 +33,18 @@ params:
 
 ****
 
-## 0. Estat:
+## 0. State:
 
-**agregacions i part global descriptiva**
+**aggregations and descriptive global part**
 
 
 &check; Trends in the degree of control and treatment of cardiovascular risk factors in people with type 2 diabetes in the primary care setting in Catalonia during 2007-2018 <br/>
 
 
-**Pendents**
+**Pending**
 
-&check; Revisio i depuracio errors.   <br/>
+&check; Review and debug errors.   <br/>
 
-# Fase de validacio de base
-
-## Fase Preparacio
 
 
 ```{r setup, include = FALSE}
@@ -127,7 +124,9 @@ calcul_p_trend<-function(dt=dades_qualis,var="Q4") {
     mutate_all(as.numeric) %>% 
     prop_trend_test()
   
-   dplyr::distinct(tibble(variable=lab,p_valor=result$p,statistic=result$statistic,method=result$method))
+  if (result$p<0.001) {p<-"<0.001"} else p<-as.character(result$p)
+  
+   dplyr::distinct(tibble(variable=lab$NAMES,p_value=p,statistic=result$statistic,method=result$method))
    
   }
 
@@ -138,8 +137,8 @@ calcul_p_trend<-function(dt=dades_qualis,var="Q4") {
 
 calcul_p_trend_mean<-function(dt=dades_numeriques,var="num1") {
 
-  #dt=dades_numeriques
-  #var="num1"
+  # dt=dades_numeriques
+  # var="num1"
   
   year<-seq(2007,2018, by=1)
   
@@ -170,8 +169,9 @@ calcul_p_trend_mean<-function(dt=dades_numeriques,var="num1") {
     filter(tipo==var)%>% 
     dplyr::select(NAMES)
   
+  if (PP2$`Pr(F)`[1]<0.001) {p<-"<0.001"} else p<-as.character(PP2$`Pr(F)`[1])
   
-  tibble(variable=lab,p_valor=PP2$`Pr(F)`[1],F_Value=PP2$`F value`[1],Method="Anova 1 Factor")
+  tibble(variable=lab$NAMES,p_value=p,F_Value=PP2$`F value`[1],Method="Anova 1 Factor")
 
   }
 
@@ -189,12 +189,12 @@ plot_t_trend<-function(dt=dades_numeriques,variable="num4") {
 
   dt2<-tibble(any=year,val=num)
   
-  pvalor<-calcul_p_trend_mean(dt,variable) %>% pull(p_valor) %>% round(4)
+  pvalor<-calcul_p_trend_mean(dt,variable) %>% pull(p_value) 
   
   etiqueta_var<-dt %>% filter(tipo==variable) %>% pull(NAMES)
   
   dt2 %>% ggplot(aes(any,val))  + geom_line() + geom_point() + 
-    ggtitle(paste0(etiqueta_var, " durant 2007-2018")) + 
+    ggtitle(paste0(etiqueta_var, " during 2007-2018")) + 
     labs(caption=paste0("p-value=",pvalor))
     
   
@@ -214,7 +214,8 @@ plot_t_trend<-function(dt=dades_numeriques,variable="num4") {
 ```
 
 
-## 0. Descriptiva.Taula_0
+
+## 1. Descriptive Table 0
 ```{r Resultats0, include=T}
 
 
@@ -225,22 +226,25 @@ dades_numeriques0<-dades_numeriques %>%dplyr::filter(Suplements=="0")
 
 #i): quali
 dades_qualis0%>%distinct(tipo) %>% pull(tipo) %>% 
-  map_df(~calcul_p_trend(.x,dt=dades_qualis0)) 
+  map_df(~calcul_p_trend(.x,dt=dades_qualis0)) %>% 
+  kable() %>% kableExtra::kable_classic_2()
 
 #ii): quanti
 dades_numeriques0%>% distinct(tipo) %>% pull(tipo) %>% 
-   map_df(~calcul_p_trend_mean(.x,dt=dades_numeriques0))
+  map_df(~calcul_p_trend_mean(.x,dt=dades_numeriques0)) %>% 
+  kable() %>% kableExtra::kable_classic_2()
 
 #iii) quanti-plot!
 dades_numeriques0%>% distinct(tipo) %>% pull(tipo) %>% 
- map(~plot_t_trend(.x,dt=dades_numeriques0))
+ map(~plot_t_trend(.x,dt=dades_numeriques0)) 
+  
 
 
 
 ```
 
 
-## 1. Descriptiva.Taula_1:[SupT1]
+## 1. Descriptive Table 1:[SupT1]
 ```{r Resultats1, include=T}
 
 
@@ -251,7 +255,8 @@ dades_qualis1<-dades_qualis %>%dplyr::filter(Suplements=="1")
 
 #i): quali
 dades_qualis1%>%distinct(tipo) %>% pull(tipo) %>% 
-  map_df(~calcul_p_trend(.x,dt=dades_qualis1)) 
+  map_df(~calcul_p_trend(.x,dt=dades_qualis1)) %>% 
+  kable() %>% kableExtra::kable_classic_2()
 
 #ii): quanti
 #dades_numeriques1%>% distinct(tipo) %>% pull(tipo) %>% 
@@ -265,18 +270,20 @@ dades_qualis1%>%distinct(tipo) %>% pull(tipo) %>%
 
 ```
 
-## 2. Descriptiva.Taula_2:[SupT2]
+## 1. Descriptive Table 2:[SupT2]
 ```{r Resultats2, include=T}
 
 
 dades_qualis2<-dades_qualis %>%dplyr::filter(Suplements=="2")
+
 #dades_numeriques2<-dades_numeriques %>%dplyr::filter(Suplements=="2")
 
 
 
 #i): quali
 dades_qualis2%>%distinct(tipo) %>% pull(tipo) %>% 
-  map_df(~calcul_p_trend(.x,dt=dades_qualis2)) 
+  map_df(~calcul_p_trend(.x,dt=dades_qualis2))  %>% 
+  kable() %>% kableExtra::kable_classic_2()
 
 #ii): quanti
 #dades_numeriques2%>% distinct(tipo) %>% pull(tipo) %>% 
@@ -291,7 +298,7 @@ dades_qualis2%>%distinct(tipo) %>% pull(tipo) %>%
 
 ```
 
-## 3. Descriptiva.Taula_3:[SupT3]
+## 1. Descriptive Table 3:[SupT3]
 ```{r Resultats3, include=T}
 
 
@@ -307,7 +314,8 @@ dades_numeriques3<-dades_numeriques %>%dplyr::filter(Suplements=="3")
 
 #ii): quanti
 dades_numeriques3%>% distinct(tipo) %>% pull(tipo) %>% 
-   map_df(~calcul_p_trend_mean(.x,dt=dades_numeriques3))
+   map_df(~calcul_p_trend_mean(.x,dt=dades_numeriques3)) %>% 
+   kable() %>% kableExtra::kable_classic_2()
 
 #iii) quanti-plot!
 dades_numeriques3%>% distinct(tipo) %>% pull(tipo) %>% 
@@ -317,7 +325,7 @@ dades_numeriques3%>% distinct(tipo) %>% pull(tipo) %>%
 
 ```
 
-## 4. Descriptiva.Taula_4:[SupT4]
+## 1. Descriptive Table 4:[SupT4]
 ```{r Resultats4, include=T}
 
 dades_qualis4<-dades_qualis %>%dplyr::filter(Suplements=="4")
@@ -342,7 +350,7 @@ dades_qualis4%>%distinct(tipo) %>% pull(tipo) %>%
 
 
 
-## 5. Descriptiva.Taula_5:[SupT5]
+## 1. Descriptive Table 5:[SupT5]
 ```{r Resultats5, include=T}
 
 dades_qualis5<-dades_qualis %>%dplyr::filter(Suplements=="5")
@@ -363,7 +371,7 @@ dades_qualis5%>%distinct(tipo) %>% pull(tipo) %>%
 
 
 ```
-## 6. Descriptiva.Taula_6:[SupT6]
+## 1. Descriptive Table 6:[SupT6]
 ```{r Resultats6, include=T}
 
 
@@ -388,7 +396,7 @@ dades_qualis6%>%distinct(tipo) %>% pull(tipo) %>%
 
 ```
 
-## 4. Salvar taula plana
+## 2. Save "Taula Plana"
 
 ```{r salvar}
 
