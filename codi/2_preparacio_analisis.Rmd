@@ -335,7 +335,8 @@ dades_qualis4<-dades_qualis %>%dplyr::filter(Suplements=="4")
 
 #i): quali
 dades_qualis4%>%distinct(tipo) %>% pull(tipo) %>% 
-  map_df(~calcul_p_trend(.x,dt=dades_qualis4)) 
+  map_df(~calcul_p_trend(.x,dt=dades_qualis4))%>% 
+  kable() %>% kableExtra::kable_classic_2() 
 
 #ii): quanti
 #dades_numeriques4%>% distinct(tipo) %>% pull(tipo) %>% 
@@ -359,7 +360,8 @@ dades_qualis5<-dades_qualis %>%dplyr::filter(Suplements=="5")
 
 #i): quali
 dades_qualis5%>%distinct(tipo) %>% pull(tipo) %>% 
-  map_df(~calcul_p_trend(.x,dt=dades_qualis5)) 
+  map_df(~calcul_p_trend(.x,dt=dades_qualis5))%>% 
+  kable() %>% kableExtra::kable_classic_2() 
 
 #ii): quanti
 #dades_numeriques5%>% distinct(tipo) %>% pull(tipo) %>% 
@@ -382,7 +384,8 @@ dades_qualis6<-dades_qualis %>%dplyr::filter(Suplements=="6")
 
 #i): quali
 dades_qualis6%>%distinct(tipo) %>% pull(tipo) %>% 
-  map_df(~calcul_p_trend(.x,dt=dades_qualis6)) 
+  map_df(~calcul_p_trend(.x,dt=dades_qualis6)) %>% 
+  kable() %>% kableExtra::kable_classic_2()
 
 #ii): quanti
 #dades_numeriques6%>% distinct(tipo) %>% pull(tipo) %>% 
